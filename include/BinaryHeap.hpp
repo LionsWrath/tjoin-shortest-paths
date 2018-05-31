@@ -1,12 +1,14 @@
 #ifndef _BINARY_HEAP_HPP
 #define _BINARY_HEAP_HPP
 
+// TODO: OPERATOR [] FOR CHANGING VALUES
+// TODO: BUBBLE UP AND BUBBLE DOWN
+// TODO: Implement a iterative Heapify?
+
 #include <deque>
 #include <stdexcept>
 #include <functional>
 #include <unordered_map>
-
-#include <iostream>
 
 template <class T, class I, class C=std::greater<T>>
 class BinaryHeap {
@@ -28,6 +30,18 @@ public:
     ~BinaryHeap() {
         delete vec;
         delete index_map;
+    }
+
+    // Access an element with value I
+    // O(1)
+    T operator[](I value) {
+        return vec->operator[](index_map->operator[](value)).second;
+    }
+
+    // Check if a element exists in the heap
+    // O(1)
+    bool exists(I value) {
+        return index_map->find(value) != index_map->end();
     }
 
     // Heapify a subtree beginning at a index
