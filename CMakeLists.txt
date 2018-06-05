@@ -20,9 +20,16 @@ set(DijkstraTests
     src/Dijkstra.cpp
 )
 
+set(TestJoinShortestPathTests
+    tests/TJoinShortestPathTests.cpp
+    src/TJoinShortestPath.cpp
+    src/Dijkstra.cpp
+)
+
 set(UnitTests
     BinaryHeapTests
     DijkstraTests
+    TestJoinShortestPathTests
 )
 
 foreach(Testname ${UnitTests})

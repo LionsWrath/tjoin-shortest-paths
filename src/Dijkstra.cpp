@@ -1,6 +1,6 @@
-#include <climits>
-
 #include "../include/Dijkstra.hpp"
+
+#include <climits>
 
 Dijkstra::Dijkstra() {}
 
@@ -43,7 +43,7 @@ void Dijkstra::run(
 
             if (!heap.exists(ng)) continue;
             if (distances[id] + weights[edge] < heap[ng]) {
-                parents[ng] = id;
+                parents[ng] = edge;
                 heap.decrease_key(ng, distances[id] + weights[edge]);
             }     
         }
@@ -54,6 +54,17 @@ long long Dijkstra::distance(lemon::ListGraph& G, lemon::ListGraph::Node to) {
     return distances[G.id(to)];
 }
 
-Dijkstra::Path Dijkstra::get_path(lemon::ListGraph& G, lemon::ListGraph::Node) {
-    return Dijkstra::Path();
+Dijkstra::Path Dijkstra::getPath(lemon::ListGraph& G, 
+        lemon::ListGraph::Node node) {
+    
+    Path path;
+
+    int idx = G.id(node);
+
+    while (parents.find(idx) != parents.end()) {
+        path.push_front(parents[idx]);
+        idx = G.id(G.oppositeNode(G.nodeFromId(idx), parents[idx]));
+    }    
+
+    return path;
 }
