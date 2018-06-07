@@ -24,7 +24,7 @@ class Dijkstra {
     std::unordered_map<int, Value> distances;
     BinaryHeap<Value, int, compare> heap;
 
-    void init(Graph&, Graph::Node);
+    void init(const Graph&, Graph::Node);
 
 public:
     typedef std::deque<Graph::Edge> Path;
@@ -33,11 +33,11 @@ public:
 
     void reset();
 
-    void run(Graph&, Graph::EdgeMap<Value>&, Graph::Node);
+    void run(const Graph&, Graph::EdgeMap<Value>&, Graph::Node);
 
-    Value distance(Graph&, Graph::Node);
+    Value distance(const Graph&, Graph::Node);
 
-    Path getPath(Graph&, Graph::Node);
+    Path getPath(const Graph&, Graph::Node);
 };
 
 #endif

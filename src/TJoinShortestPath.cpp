@@ -13,19 +13,20 @@
 
 // O(|U|^3 log |U|)
 TJoinShortestPath::TJoinShortestPath(
-        Graph& g, 
-        Graph::EdgeMap<Value>& weights) {
+        const Graph& g, 
+        const Graph::EdgeMap<Value>& weights) : G(g), WO(weights) {
 
-    this->init(g, weights);
+    // Remover esse g
+    this->init();
 
     // Transform the original weight mapping to the absolute version
     // Construct N
     // O(|E|)
     for(Graph::EdgeIt e(G); e != lemon::INVALID; ++e) {
-        if ((*WO)[e] < 0) {
+        if (WO[e] < 0) {
             (*N)[e] = true;
-            (*W)[e] = std::llabs((*WO)[e]);
-        } else (*W)[e] = (*WO)[e];
+            (*W)[e] = std::llabs(WO[e]);
+        } else (*W)[e] = WO[e];
     }
 
     // Construct the T' using the G[N]
@@ -49,18 +50,7 @@ TJoinShortestPath::TJoinShortestPath(
 }
 
 // O(|E|)
-void TJoinShortestPath::init(Graph& g, Graph::EdgeMap<Value>& weights) {
-    WO = new Graph::EdgeMap<Value>(G);
-
-    NR = new Graph::NodeMap<Graph::Node>(g);
-    ER = new Graph::EdgeMap<Graph::Edge>(G);
-
-    lemon::graphCopy(g, G)
-        .edgeMap(weights, *WO)
-        .nodeRef(*NR)
-        .edgeCrossRef(*ER)
-        .run();
-
+void TJoinShortestPath::init() {
     W  = new Graph::EdgeMap<Value>(G);
     N  = new Graph::EdgeMap<bool>(G, false);
     _T = new Graph::NodeMap<bool>(G, false);
@@ -99,23 +89,15 @@ TJoinShortestPath::EdgeSet TJoinShortestPath::run(
         Graph::Node u, Graph::Node v) {
 
     NodeSet T;
-    T.insert((*NR)[u]); // O(log |T|)
-    T.insert((*NR)[v]); // O(log |T|)
+    T.insert(u); // O(log |T|)
+    T.insert(v); // O(log |T|)
 
     // O(|V| + |J"|^3 log |J"| + |E|)
     NodeSet _J   = this->symDiff(T, this->nodeMapToNodeSet(*_T));
     EdgeSet join = this->calculateMinimumJoin(_J);
     EdgeSet J    = this->symDiff(join, this->edgeMapToEdgeSet(*N));
 
-    EdgeSet res;
-
-    // O(|E|)
-    std::transform(
-            J.begin(), J.end(),
-            std::inserter(res, res.begin()),
-            [this](Graph::Edge e) -> Graph::Edge { return (*ER)[e]; });
-
-    return res;
+    return J;
 }
 
 // O(|E|)
@@ -150,13 +132,12 @@ TJoinShortestPath::NodeSet TJoinShortestPath::nodeMapToNodeSet(
 
 // O(|E|)
 TJoinShortestPath::Value TJoinShortestPath::calculateJoinWeight(
-        TJoinShortestPath::EdgeSet join, 
-        Graph::EdgeMap<Value>& w) {
+        TJoinShortestPath::EdgeSet join) {
 
     Value weight = 0;
 
     for (auto e : join) {
-        weight += w[e]; 
+        weight += WO[e]; 
     }
 
     return weight;
@@ -237,7 +218,7 @@ bool TJoinShortestPath::checkNegativeWeightCycle() {
             this->calculateMinimumJoin(nodes), 
             this->edgeMapToEdgeSet(*N));
 
-    if (this->calculateJoinWeight(tjoin, *WO) < 0)
+    if (this->calculateJoinWeight(tjoin) < 0)
         return true;
     return false;
 }

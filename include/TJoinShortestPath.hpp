@@ -10,7 +10,7 @@
 class TJoinShortestPath {
 private:
     typedef lemon::ListGraph Graph;
-    typedef lemon::FilterEdges<Graph> SubGraph;
+    typedef lemon::FilterEdges<const Graph> SubGraph;
     typedef lemon::FullGraph FullGraph;
     typedef long long Value;
     typedef lemon::MaxWeightedPerfectMatching<FullGraph, 
@@ -21,17 +21,14 @@ public:
     typedef std::set<Graph::Node> NodeSet;
 
 private:
-    Graph G;
-
-    Graph::NodeMap<Graph::Node> *NR;
-    Graph::EdgeMap<Graph::Edge> *ER;
+    const Graph& G;
+    const Graph::EdgeMap<Value>& WO;
 
     Graph::EdgeMap<Value> *W;
-    Graph::EdgeMap<Value> *WO;
-    Graph::EdgeMap<bool> * N;
-    Graph::NodeMap<bool> *_T;
+    Graph::EdgeMap<bool>  * N;
+    Graph::NodeMap<bool>  *_T;
 
-    void init(Graph&, Graph::EdgeMap<Value>&);
+    void init();
 
     EdgeSet edgeMapToEdgeSet(Graph::EdgeMap<bool>&);
     NodeSet nodeMapToNodeSet(Graph::NodeMap<bool>&);
@@ -40,14 +37,11 @@ private:
     NodeSet symDiff(NodeSet, NodeSet);
 
     EdgeSet calculateMinimumJoin(NodeSet);
-
     bool checkNegativeWeightCycle();
 
 public:    
-    TJoinShortestPath(Graph&, Graph::EdgeMap<Value>&);
-
-    Value calculateJoinWeight(EdgeSet, Graph::EdgeMap<Value>&);
-
+    TJoinShortestPath(const Graph&, const Graph::EdgeMap<Value>&);
+    Value calculateJoinWeight(EdgeSet);
     EdgeSet run(Graph::Node, Graph::Node);
 };
 

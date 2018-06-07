@@ -9,7 +9,7 @@ void Dijkstra::reset() {
     distances.clear();
 }
 
-void Dijkstra::init(Graph& G, Graph::Node i) {
+void Dijkstra::init(const Graph& G, Graph::Node i) {
     this->reset();
 
     for (Graph::NodeIt n(G); n != lemon::INVALID; ++n) {
@@ -21,7 +21,7 @@ void Dijkstra::init(Graph& G, Graph::Node i) {
     }
 }
 
-void Dijkstra::run(Graph& G, Graph::EdgeMap<Value>& weights, 
+void Dijkstra::run(const Graph& G, Graph::EdgeMap<Value>& weights, 
         Graph::Node i) {
 
     this->init(G, i);
@@ -48,11 +48,11 @@ void Dijkstra::run(Graph& G, Graph::EdgeMap<Value>& weights,
     }
 }
 
-Dijkstra::Value Dijkstra::distance(Graph& G, Graph::Node to) {
+Dijkstra::Value Dijkstra::distance(const Graph& G, Graph::Node to) {
     return distances[G.id(to)];
 }
 
-Dijkstra::Path Dijkstra::getPath(Graph& G, Graph::Node node) {
+Dijkstra::Path Dijkstra::getPath(const Graph& G, Graph::Node node) {
     
     Path path;
 

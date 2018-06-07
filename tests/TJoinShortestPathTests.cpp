@@ -25,10 +25,10 @@ TEST(TJoinTest, CorrectDistance_1) {
 
     TJoinShortestPath tjoinsp(G, w);
 
-    EXPECT_EQ(-2, tjoinsp.calculateJoinWeight(tjoinsp.run(c, d), w));
-    EXPECT_EQ(-2, tjoinsp.calculateJoinWeight(tjoinsp.run(a, b), w));
-    EXPECT_EQ(-3, tjoinsp.calculateJoinWeight(tjoinsp.run(a, d), w));
-    EXPECT_EQ(-1, tjoinsp.calculateJoinWeight(tjoinsp.run(d, b), w));
+    EXPECT_EQ(-2, tjoinsp.calculateJoinWeight(tjoinsp.run(c, d)));
+    EXPECT_EQ(-2, tjoinsp.calculateJoinWeight(tjoinsp.run(a, b)));
+    EXPECT_EQ(-3, tjoinsp.calculateJoinWeight(tjoinsp.run(a, d)));
+    EXPECT_EQ(-1, tjoinsp.calculateJoinWeight(tjoinsp.run(d, b)));
 }
 
 TEST(TJoinTest, CorrectDistance_2) { 
@@ -53,10 +53,10 @@ TEST(TJoinTest, CorrectDistance_2) {
 
     TJoinShortestPath tjoinsp(G, w);
 
-    EXPECT_EQ(30, tjoinsp.calculateJoinWeight(tjoinsp.run(a, b), w));
-    EXPECT_EQ(25, tjoinsp.calculateJoinWeight(tjoinsp.run(a, c), w));
-    EXPECT_EQ( 5, tjoinsp.calculateJoinWeight(tjoinsp.run(a, d), w));
-    EXPECT_EQ(25, tjoinsp.calculateJoinWeight(tjoinsp.run(d, b), w));
+    EXPECT_EQ(30, tjoinsp.calculateJoinWeight(tjoinsp.run(a, b)));
+    EXPECT_EQ(25, tjoinsp.calculateJoinWeight(tjoinsp.run(a, c)));
+    EXPECT_EQ( 5, tjoinsp.calculateJoinWeight(tjoinsp.run(a, d)));
+    EXPECT_EQ(25, tjoinsp.calculateJoinWeight(tjoinsp.run(d, b)));
 }
 
 TEST(TJoinTest, CorrectDistance_3) { 
@@ -91,12 +91,12 @@ TEST(TJoinTest, CorrectDistance_3) {
 
     TJoinShortestPath tjoinsp(G, w);
 
-    EXPECT_EQ( -5, tjoinsp.calculateJoinWeight(tjoinsp.run(a, b), w));
-    EXPECT_EQ( -9, tjoinsp.calculateJoinWeight(tjoinsp.run(a, c), w));
-    EXPECT_EQ(-20, tjoinsp.calculateJoinWeight(tjoinsp.run(a, d), w));
-    EXPECT_EQ(-14, tjoinsp.calculateJoinWeight(tjoinsp.run(a, e), w));
-    EXPECT_EQ(-11, tjoinsp.calculateJoinWeight(tjoinsp.run(a, f), w));
-    EXPECT_EQ( -2, tjoinsp.calculateJoinWeight(tjoinsp.run(b, c), w));
+    EXPECT_EQ( -5, tjoinsp.calculateJoinWeight(tjoinsp.run(a, b)));
+    EXPECT_EQ( -9, tjoinsp.calculateJoinWeight(tjoinsp.run(a, c)));
+    EXPECT_EQ(-20, tjoinsp.calculateJoinWeight(tjoinsp.run(a, d)));
+    EXPECT_EQ(-14, tjoinsp.calculateJoinWeight(tjoinsp.run(a, e)));
+    EXPECT_EQ(-11, tjoinsp.calculateJoinWeight(tjoinsp.run(a, f)));
+    EXPECT_EQ( -2, tjoinsp.calculateJoinWeight(tjoinsp.run(b, c)));
 }
 TEST(TJoinTest, CorrectDistance_4) { 
     lemon::ListGraph G;
@@ -130,11 +130,11 @@ TEST(TJoinTest, CorrectDistance_4) {
 
     TJoinShortestPath tjoinsp(G, w);
 
-    EXPECT_EQ( 7, tjoinsp.calculateJoinWeight(tjoinsp.run(a, b), w));
-    EXPECT_EQ( 9, tjoinsp.calculateJoinWeight(tjoinsp.run(a, c), w));
-    EXPECT_EQ(20, tjoinsp.calculateJoinWeight(tjoinsp.run(a, d), w));
-    EXPECT_EQ(20, tjoinsp.calculateJoinWeight(tjoinsp.run(a, e), w));
-    EXPECT_EQ(11, tjoinsp.calculateJoinWeight(tjoinsp.run(a, f), w));
+    EXPECT_EQ( 7, tjoinsp.calculateJoinWeight(tjoinsp.run(a, b)));
+    EXPECT_EQ( 9, tjoinsp.calculateJoinWeight(tjoinsp.run(a, c)));
+    EXPECT_EQ(20, tjoinsp.calculateJoinWeight(tjoinsp.run(a, d)));
+    EXPECT_EQ(20, tjoinsp.calculateJoinWeight(tjoinsp.run(a, e)));
+    EXPECT_EQ(11, tjoinsp.calculateJoinWeight(tjoinsp.run(a, f)));
 }
 
 TEST(TJoinTest, CheckNegativeCycle_1) {

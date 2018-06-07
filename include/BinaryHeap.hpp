@@ -47,16 +47,19 @@ public:
     // Heapify a subtree beginning at a index
     // O(log n)
     void heapify(int idx) {
-        int r = this->get_right(idx);
-        int l = this->get_left(idx);
-        int s = idx;
+        int r, l, s;
 
-        if (l < vec->size() && C()(vec->at(s), vec->at(l))) s = l;
-        if (r < vec->size() && C()(vec->at(s), vec->at(r))) s = r;
+        while(true) {
+            r = this->get_right(idx);
+            l = this->get_left(idx);
+            s = idx;
 
-        if (s != idx) {
+            if (l < vec->size() && C()(vec->at(s), vec->at(l))) s = l;
+            if (r < vec->size() && C()(vec->at(s), vec->at(r))) s = r;
+            if (s == idx) break;
+
             this->swap(idx, s);
-            this->heapify(s);
+            idx = s;
         }
     }
 
