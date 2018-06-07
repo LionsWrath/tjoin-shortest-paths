@@ -73,8 +73,3 @@ TEST(BinaryHeapTest, CorrectGraphMin) {
     EXPECT_EQ(NodeG(G.id(a), 15), heap.extract_min());
     EXPECT_EQ(NodeG(G.id(b), 40), heap.extract_min());
 }
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

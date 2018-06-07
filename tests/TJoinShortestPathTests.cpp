@@ -188,8 +188,3 @@ TEST(TJoinTest, CheckNegativeCycle_2) {
         ASSERT_STREQ("This Graph contain a negative cycle!", e.what());
     }
 }
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

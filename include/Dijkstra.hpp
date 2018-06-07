@@ -8,7 +8,9 @@
 #include "BinaryHeap.hpp"
 
 class Dijkstra {
-    typedef std::pair<int, long long> NodeW;
+    typedef lemon::ListGraph Graph;
+    typedef long long Value;
+    typedef std::pair<int, Value> NodeW;
 
     class compare {
     public:
@@ -18,26 +20,24 @@ class Dijkstra {
         }
     };
 
-    std::unordered_map<int, lemon::ListGraph::Edge> parents;
-    std::unordered_map<int, long long> distances;
-    BinaryHeap<long long, int, compare> heap;
+    std::unordered_map<int, Graph::Edge> parents;
+    std::unordered_map<int, Value> distances;
+    BinaryHeap<Value, int, compare> heap;
 
-    void init(lemon::ListGraph&, lemon::ListGraph::Node);
+    void init(Graph&, Graph::Node);
 
 public:
-    typedef std::deque<lemon::ListGraph::Edge> Path;
+    typedef std::deque<Graph::Edge> Path;
 
     Dijkstra();
 
     void reset();
 
-    void run(lemon::ListGraph&, 
-            lemon::ListGraph::EdgeMap<long long>&, 
-            lemon::ListGraph::Node);
+    void run(Graph&, Graph::EdgeMap<Value>&, Graph::Node);
 
-    long long distance(lemon::ListGraph&, lemon::ListGraph::Node);
+    Value distance(Graph&, Graph::Node);
 
-    Path getPath(lemon::ListGraph&, lemon::ListGraph::Node);
+    Path getPath(Graph&, Graph::Node);
 };
 
 #endif

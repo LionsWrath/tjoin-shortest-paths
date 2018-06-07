@@ -97,8 +97,3 @@ TEST(DijkstraTest, CorrectDistance_3) {
     EXPECT_EQ(20, dijkstra.distance(G, e));
     EXPECT_EQ(11, dijkstra.distance(G, f));
 }
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
