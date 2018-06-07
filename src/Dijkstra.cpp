@@ -9,10 +9,10 @@ void Dijkstra::reset() {
     distances.clear();
 }
 
-void Dijkstra::init(lemon::ListGraph& G, lemon::ListGraph::Node i) {
+void Dijkstra::init(Graph& G, Graph::Node i) {
     this->reset();
 
-    for (lemon::ListGraph::NodeIt n(G); n != lemon::INVALID; ++n) {
+    for (Graph::NodeIt n(G); n != lemon::INVALID; ++n) {
         if (G.id(i) == G.id(n)) {
             heap.insert_key(G.id(n), 0);
         } else {
@@ -21,10 +21,8 @@ void Dijkstra::init(lemon::ListGraph& G, lemon::ListGraph::Node i) {
     }
 }
 
-void Dijkstra::run(
-        lemon::ListGraph& G, 
-        lemon::ListGraph::EdgeMap<long long>& weights, 
-        lemon::ListGraph::Node i) {
+void Dijkstra::run(Graph& G, Graph::EdgeMap<Value>& weights, 
+        Graph::Node i) {
 
     this->init(G, i);
 
@@ -32,13 +30,13 @@ void Dijkstra::run(
         NodeW front = heap.extract_min();
 
         int id = front.first;
-        lemon::ListGraph::Node node = G.nodeFromId(id);
+        Graph::Node node = G.nodeFromId(id);
         distances[id] = front.second;
 
-        for (lemon::ListGraph::IncEdgeIt a(G, node); 
+        for (Graph::IncEdgeIt a(G, node); 
                 a != lemon::INVALID; ++a) {
 
-            lemon::ListGraph::Edge edge(a);
+            Graph::Edge edge(a);
             int ng = G.id(G.oppositeNode(node, edge));
 
             if (!heap.exists(ng)) continue;
@@ -50,12 +48,11 @@ void Dijkstra::run(
     }
 }
 
-long long Dijkstra::distance(lemon::ListGraph& G, lemon::ListGraph::Node to) {
+Dijkstra::Value Dijkstra::distance(Graph& G, Graph::Node to) {
     return distances[G.id(to)];
 }
 
-Dijkstra::Path Dijkstra::getPath(lemon::ListGraph& G, 
-        lemon::ListGraph::Node node) {
+Dijkstra::Path Dijkstra::getPath(Graph& G, Graph::Node node) {
     
     Path path;
 

@@ -11,42 +11,33 @@ find_package(Threads REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(include)
 
-set(BinaryHeapTests
-    tests/BinaryHeapTests.cpp
-)
-
-set(DijkstraTests
-    tests/DijkstraTests.cpp
+set(MainCode
+    src/Main.cpp
     src/Dijkstra.cpp
-)
-
-set(TestJoinShortestPathTests
-    tests/TJoinShortestPathTests.cpp
     src/TJoinShortestPath.cpp
-    src/Dijkstra.cpp
 )
+
+add_executable(MainCode ${MainCode})
 
 set(UnitTests
-    BinaryHeapTests
-    DijkstraTests
-    TestJoinShortestPathTests
+    tests/BinaryHeapTests.cpp
+    tests/DijkstraTests.cpp
+    tests/TJoinShortestPathTests.cpp
+    src/Dijkstra.cpp
+    src/TJoinShortestPath.cpp
 )
 
-foreach(Testname ${UnitTests})
-    add_executable(${Testname} "${${Testname}}")
-    target_link_libraries(${Testname}
+if (ENABLE_TESTS)
+    add_executable(UnitTests ${UnitTests})
+    target_link_libraries(UnitTests
         ${GTEST_BOTH_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
     )
-endforeach(Testname ${UnitTests})
 
-if (ENABLE_TESTS)
-    foreach(UNIT_TEST ${UnitTests})
-        add_custom_command(
-             TARGET ${UNIT_TEST}
-             COMMENT "Run test."
-             POST_BUILD 
-             COMMAND ${UNIT_TEST}
-        )
-    endforeach(UNIT_TEST ${UnitTests})
+    add_custom_command(
+         TARGET UnitTests
+         COMMENT "Running tests. . ."
+         POST_BUILD 
+         COMMAND UnitTests
+    )
 endif()

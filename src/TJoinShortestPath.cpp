@@ -7,25 +7,20 @@
 #include <algorithm>
 #include <unordered_map>
 
+// Estimate on complexity:
+//      On construction:        O(|U|^3 log |U|)
+//      For each call on run(): O(|J"|^3 log |J"|)
+
+// O(|U|^3 log |U|)
 TJoinShortestPath::TJoinShortestPath(
         Graph& g, 
-        Graph::EdgeMap<long long>& weights) {
+        Graph::EdgeMap<Value>& weights) {
 
-    WO = new Graph::EdgeMap<long long>(G);
+    this->init(g, weights);
 
-    NR = new Graph::NodeMap<Graph::Node>(g);
-    ER = new Graph::EdgeMap<Graph::Edge>(G);
-
-    lemon::graphCopy(g, G)
-        .edgeMap(weights, *WO)
-        .nodeRef(*NR)
-        .edgeCrossRef(*ER)
-        .run();
-
-    W  = new Graph::EdgeMap<long long>(G);
-    N  = new Graph::EdgeMap<bool>(G, false);
-    _T = new Graph::NodeMap<bool>(G, false);
-
+    // Transform the original weight mapping to the absolute version
+    // Construct N
+    // O(|E|)
     for(Graph::EdgeIt e(G); e != lemon::INVALID; ++e) {
         if ((*WO)[e] < 0) {
             (*N)[e] = true;
@@ -33,6 +28,8 @@ TJoinShortestPath::TJoinShortestPath(
         } else (*W)[e] = (*WO)[e];
     }
 
+    // Construct the T' using the G[N]
+    // O(|E(G[N])|) -> O(|E|)
     SubGraph sg(G, *N);
 
     for (SubGraph::NodeIt n(sg); n != lemon::INVALID; ++n) {
@@ -45,10 +42,31 @@ TJoinShortestPath::TJoinShortestPath(
         if (1 == dg % 2) (*_T)[n] = true; 
     }
 
+    // Construct an {}-join to check negative weight cycle
+    // O(|U|^3 log |U|)
     if (this->checkNegativeWeightCycle())
         throw std::logic_error("This Graph contain a negative cycle!");
 }
 
+// O(|E|)
+void TJoinShortestPath::init(Graph& g, Graph::EdgeMap<Value>& weights) {
+    WO = new Graph::EdgeMap<Value>(G);
+
+    NR = new Graph::NodeMap<Graph::Node>(g);
+    ER = new Graph::EdgeMap<Graph::Edge>(G);
+
+    lemon::graphCopy(g, G)
+        .edgeMap(weights, *WO)
+        .nodeRef(*NR)
+        .edgeCrossRef(*ER)
+        .run();
+
+    W  = new Graph::EdgeMap<Value>(G);
+    N  = new Graph::EdgeMap<bool>(G, false);
+    _T = new Graph::NodeMap<bool>(G, false);
+}
+
+// O(|E|)
 TJoinShortestPath::EdgeSet TJoinShortestPath::symDiff(EdgeSet l, EdgeSet r) {
     std::vector<Graph::Edge> res(l.size() + r.size());
 
@@ -62,6 +80,7 @@ TJoinShortestPath::EdgeSet TJoinShortestPath::symDiff(EdgeSet l, EdgeSet r) {
     return EdgeSet(res.begin(), res.end());
 }
 
+// O(|V|)
 TJoinShortestPath::NodeSet TJoinShortestPath::symDiff(NodeSet l, NodeSet r) {
     std::vector<Graph::Node> res(l.size() + r.size());
 
@@ -75,19 +94,22 @@ TJoinShortestPath::NodeSet TJoinShortestPath::symDiff(NodeSet l, NodeSet r) {
     return NodeSet(res.begin(), res.end());
 }
 
+// O(|J"|^3 log |J"|)
 TJoinShortestPath::EdgeSet TJoinShortestPath::run(
         Graph::Node u, Graph::Node v) {
 
     NodeSet T;
-    T.insert((*NR)[u]);
-    T.insert((*NR)[v]);
+    T.insert((*NR)[u]); // O(log |T|)
+    T.insert((*NR)[v]); // O(log |T|)
 
+    // O(|V| + |J"|^3 log |J"| + |E|)
     NodeSet _J   = this->symDiff(T, this->nodeMapToNodeSet(*_T));
     EdgeSet join = this->calculateMinimumJoin(_J);
     EdgeSet J    = this->symDiff(join, this->edgeMapToEdgeSet(*N));
 
     EdgeSet res;
 
+    // O(|E|)
     std::transform(
             J.begin(), J.end(),
             std::inserter(res, res.begin()),
@@ -96,6 +118,7 @@ TJoinShortestPath::EdgeSet TJoinShortestPath::run(
     return res;
 }
 
+// O(|E|)
 TJoinShortestPath::EdgeSet TJoinShortestPath::edgeMapToEdgeSet(
         Graph::EdgeMap<bool>& map) {
 
@@ -110,6 +133,7 @@ TJoinShortestPath::EdgeSet TJoinShortestPath::edgeMapToEdgeSet(
     return cvt;
 }
 
+// O(|V|)
 TJoinShortestPath::NodeSet TJoinShortestPath::nodeMapToNodeSet(
         Graph::NodeMap<bool>& map) {
 
@@ -124,11 +148,12 @@ TJoinShortestPath::NodeSet TJoinShortestPath::nodeMapToNodeSet(
     return cvt;
 }
 
-long long TJoinShortestPath::calculateJoinWeight(
+// O(|E|)
+TJoinShortestPath::Value TJoinShortestPath::calculateJoinWeight(
         TJoinShortestPath::EdgeSet join, 
-        Graph::EdgeMap<long long>& w) {
+        Graph::EdgeMap<Value>& w) {
 
-    long long weight = 0;
+    Value weight = 0;
 
     for (auto e : join) {
         weight += w[e]; 
@@ -137,12 +162,14 @@ long long TJoinShortestPath::calculateJoinWeight(
     return weight;
 }
 
+// O(|T|^3 log |T|)
 TJoinShortestPath::EdgeSet TJoinShortestPath::calculateMinimumJoin(
         TJoinShortestPath::NodeSet nodes) {
 
     // Create the complete Graph and necessary structures
+    // E = O(|T|^2)
     FullGraph clt(nodes.size());
-    FullGraph::EdgeMap<long long> w(clt);
+    FullGraph::EdgeMap<Value> w(clt);
     FullGraph::EdgeMap<Dijkstra::Path> p(clt);
 
     Dijkstra dij;
@@ -150,6 +177,7 @@ TJoinShortestPath::EdgeSet TJoinShortestPath::calculateMinimumJoin(
 
     // Build weight map for the complete graph
     // Save the path used
+    // O(|T|^3 log |T|)
     for (FullGraph::NodeIt n(clt); n != lemon::INVALID; ++n) {
         dij.run(G, *W, map[clt.id(n)]);
 
@@ -162,11 +190,13 @@ TJoinShortestPath::EdgeSet TJoinShortestPath::calculateMinimumJoin(
 
     // Find the optimal perfect matching
     // Note that the edges of the graph are inversed
+    // O(|T|*|T|^2* log |T|) = O(|T|^3 log |T|)
     MWPM match(clt, w);
     match.run();
 
     // Get all edges in the matching and
     // Count their number in the paths
+    // O(|T|)
     Graph::EdgeMap<int> count(G, 0);
     for (FullGraph::EdgeIt m(clt); m != lemon::INVALID; ++m) {
         if (match.matching(m)) {
@@ -179,6 +209,7 @@ TJoinShortestPath::EdgeSet TJoinShortestPath::calculateMinimumJoin(
     // Build the output set of edges
     // Only edges that appear in an odd number of paths
     // can be in the final join
+    // O(|E|)
     EdgeSet res;
     for (Graph::EdgeIt e(G); e != lemon::INVALID; ++e) {
         if (1 == count[e] % 2) {
@@ -189,6 +220,8 @@ TJoinShortestPath::EdgeSet TJoinShortestPath::calculateMinimumJoin(
     return res;
 }
 
+// U = T delta N
+// O(|U|^3 log |U|)
 bool TJoinShortestPath::checkNegativeWeightCycle() {
 
     auto nodes = this->nodeMapToNodeSet(*_T);
